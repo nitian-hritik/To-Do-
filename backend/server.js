@@ -1,37 +1,40 @@
-import express from "express"
-import mongoose from "mongoose"
-import cors from "cors"
-import dotenv from "dotenv"
+import express from "express";
+import mongoose from "mongoose";
+import dotenv from "dotenv";
+import cors from "cors";
+import bodyParser from "body-parser";
 
-import userRouter from "./routes/userRoute.js"
-import taskRouter from "./routes/taskRoute.js"
-import forgotPasswordRouter from "./routes/forgotPassword.js"
+// Import your route files
+import userRoutes from "./routes/userRoutes.js";
+import taskRoutes from "./routes/taskRoutes.js";
 
-//app config
-dotenv.config()
-const app = express()
-const port = process.env.PORT || 8001
-mongoose.set('strictQuery', true);
+dotenv.config();
 
-//middlewares
-app.use(express.json())
-app.use(cors())
+const app = express();
 
-//db config
+// ✅ Allow requests from your frontend on Vercel (CORS fix)
+app.use(cors({
+  origin: 'https://to-do-rose-gamma.vercel.app',
+  credentials: true
+}));
+
+// ✅ Middleware to parse request bodies
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+
+// ✅ API routes
+app.use("/api/user", userRoutes);
+app.use("/api/task", taskRoutes);
+
+// ✅ Connect to MongoDB
 mongoose.connect(process.env.MONGO_URI, {
-    useNewUrlParser: true,
-}, (err) => {
-    if (err) {
-        console.log(err)
-    } else {
-        console.log("DB Connected")
-    }
-})
+  useNewUrlParser: true,
+  useUnifiedTopology: true
+}).then(() => console.log("MongoDB connected"))
+  .catch((err) => console.error("MongoDB connection failed:", err));
 
-//api endpoints
-app.use("/api/user", userRouter)
-app.use("/api/task", taskRouter)
-app.use("/api/forgotPassword", forgotPasswordRouter)
-
-//listen
-app.listen(port, () => console.log(`Listening on localhost:${port}`))
+// ✅ Dynamic port support for deployment platforms like Render
+const PORT = process.env.PORT || 8000;
+app.listen(PORT, () => {
+  console.log(`Listening on port ${PORT}`);
+});
