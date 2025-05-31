@@ -4,27 +4,27 @@ import dotenv from "dotenv";
 import cors from "cors";
 import bodyParser from "body-parser";
 
-// Import your route files
-import userRoutes from "./routes/userRoutes.js";
-import taskRoutes from "./routes/taskRoutes.js";
+// ✅ Import correct file names (match exactly with your actual files)
+import userRouter from "./routes/userRoute.js";
+import taskRouter from "./routes/taskRoute.js";
 
 dotenv.config();
 
 const app = express();
 
-// ✅ Allow requests from your frontend on Vercel (CORS fix)
+// ✅ Allow requests from your frontend on Vercel
 app.use(cors({
   origin: 'https://to-do-rose-gamma.vercel.app',
   credentials: true
 }));
 
-// ✅ Middleware to parse request bodies
+// ✅ Parse request bodies
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 // ✅ API routes
-app.use("/api/user", userRoutes);
-app.use("/api/task", taskRoutes);
+app.use("/api/user", userRouter);
+app.use("/api/task", taskRouter);
 
 // ✅ Connect to MongoDB
 mongoose.connect(process.env.MONGO_URI, {
@@ -33,7 +33,7 @@ mongoose.connect(process.env.MONGO_URI, {
 }).then(() => console.log("MongoDB connected"))
   .catch((err) => console.error("MongoDB connection failed:", err));
 
-// ✅ Dynamic port support for deployment platforms like Render
+// ✅ Dynamic port support
 const PORT = process.env.PORT || 8000;
 app.listen(PORT, () => {
   console.log(`Listening on port ${PORT}`);
