@@ -15,8 +15,11 @@ const app = express();
 // ✅ Allow requests from your frontend on Vercel
 app.use(cors({
   origin: 'https://to-do-rose-gamma.vercel.app',
-  credentials: true
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
 }));
+
 
 // ✅ Parse request bodies
 app.use(bodyParser.json());
